@@ -46,7 +46,26 @@ app.get("/api/notes", function(req, res){
 })
 
 app.post("/api/notes", function(req, res){
-  fs.appendFile('./db/db', res, (err) =>{
+  let note = req.body;
+  let noteInfo = fs.appendFile('./db/db', res, (err) =>{
     if (err) throw err;
   });
+  let newNote = JSON.parse(noteInfo);
+  newNote.push(note);
+
+  fs.writeFile("newNote", newNote,(err) =>{
+    if (err) throw err;
+console.log("New note added!")
+  })
+})
+
+app.delete("/api/notes/:id",function(req, res){
+  var selectedNote = res.redirect;
+  for (var i = 0; i < arr.length; i++) {
+    if (selectedNote === arr[i].id) {
+      arr.filter(function(id, index, arr){
+        return 
+      })
+    }
+  }
 })
