@@ -5,7 +5,7 @@
 var fs = require("fs");
 var express = require("express");
 var path = require("path");
-var notes = require("./db/db.json");
+var notes = require("./Develop/db/db.json");
 
 // ==============================================================================
 // EXPRESS CONFIGURATION
