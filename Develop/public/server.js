@@ -2,7 +2,7 @@
 // DEPENDENCIES
 // Series of npm packages that we will use to give our server useful functionality
 // ==============================================================================
-
+var fs = require("fs");
 var express = require("express");
 
 // ==============================================================================
@@ -38,3 +38,15 @@ app.listen(PORT, function() {
   console.log("App listening on PORT: " + PORT);
 });
 
+
+app.get("/api/notes", function(req, res){
+  fs.readFile('./db/db', res, (err) =>{
+    if (err) throw err;
+  });
+})
+
+app.post("/api/notes", function(req, res){
+  fs.appendFile('./db/db', res, (err) =>{
+    if (err) throw err;
+  });
+})
