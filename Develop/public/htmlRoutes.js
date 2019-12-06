@@ -19,6 +19,11 @@ module.exports = function(app) {
     res.sendFile(path.join(__dirname, "./notes.html"));
   });
 
+  app.get("/db.json", function(req, res){
+    readFileAsync(path.join(__dirname, "./db/db.json"), "utf8")
+
+  })
+
 //   app.get("/reserve", function(req, res) {
 //     res.sendFile(path.join(__dirname, "../public/reserve.html"));
 //   });

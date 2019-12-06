@@ -4,6 +4,8 @@
 // ==============================================================================
 var fs = require("fs");
 var express = require("express");
+var path = require("path");
+var notes = require("./db/db.json");
 
 // ==============================================================================
 // EXPRESS CONFIGURATION
@@ -20,6 +22,8 @@ var PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, "./public")));
+
 // ================================================================================
 // ROUTER
 // The below points our server to a series of "route" files.
@@ -27,45 +31,56 @@ app.use(express.json());
 // ================================================================================
 
 // require("./routes/apiRoutes")(app);
-require("./htmlRoutes")(app);
+require("./public/htmlRoutes")(app);
 
 // =============================================================================
 // LISTENER
 // The below code effectively "starts" our server
 // =============================================================================
 
-app.listen(PORT, function() {
+app.listen(PORT, function () {
   console.log("App listening on PORT: " + PORT);
 });
 
 
-app.get("/api/notes", function(req, res){
-  fs.readFile('./db/db', res, (err) =>{
-    if (err) throw err;
-  });
+app.get("/api/notes", function (req, res) {
+  // fs.readFile('./db/db.json', res, (err) => {
+  //   if (err) throw err;
+    return res.json(notes);
+  
 })
 
-app.post("/api/notes", function(req, res){
+app.post("/api/notes", function (req, res) {
   let note = req.body;
-  let noteInfo = fs.appendFile('./db/db', res, (err) =>{
-    if (err) throw err;
-  });
-  let newNote = JSON.parse(noteInfo);
-  newNote.push(note);
+  // let noteInfo = fs.appendFile('./db/db.json', res, (err) => {
+  //   if (err) throw err;
+  // });
+  // let newNote = JSON.parse(noteInfo);
+  // newNote.push(note);
+  addNote(note)
 
-  fs.writeFile("newNote", newNote,(err) =>{
-    if (err) throw err;
-console.log("New note added!")
-  })
+  // fs.writeFile("newNote", newNote, (err) => {
+  //   if (err) throw err;
+  //   console.log("New note added!")
+  // })
 })
 
-app.delete("/api/notes/:id",function(req, res){
+app.delete("/api/notes/:id", function (req, res) {
   var selectedNote = res.redirect;
   for (var i = 0; i < arr.length; i++) {
     if (selectedNote === arr[i].id) {
-      arr.filter(function(id, index, arr){
-        return 
+      arr.filter(function (id, index, arr) {
+        return
       })
     }
   }
 })
+
+function addNote(note) {
+  let parsedNotes = notes;
+  parsedNotes.push(note);
+  fs.writeFile('./db/db.json', JSON.stringify(parsedNotes), "utf8", (err, res) => {
+    if (err) throw err;
+  }
+
+  )}
