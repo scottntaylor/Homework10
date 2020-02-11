@@ -1,86 +1,74 @@
-// ==============================================================================
-// DEPENDENCIES
-// Series of npm packages that we will use to give our server useful functionality
-// ==============================================================================
+
 var fs = require("fs");
 var express = require("express");
 var path = require("path");
 var notes = require("./Develop/db/db.json");
 
-// ==============================================================================
-// EXPRESS CONFIGURATION
-// This sets up the basic properties for our express server
-// ==============================================================================
 
-// Tells node that we are creating an "express" server
-var app = express();
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Sets an initial port. We"ll use this later in our listener
-var PORT = process.env.PORT || 3000;
-
-// Sets up the Express app to handle data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static('public'));
 
-app.use(express.static(path.join(__dirname, "./public")));
+app.listen(PORT, () => {
+  console.log("App listening on PORT " + PORT);
+});
 
-// ================================================================================
-// ROUTER
-// The below points our server to a series of "route" files.
-// These routes give our server a "map" of how to respond when users visit or request data from various URLs.
-// ================================================================================
-
-// require("./routes/apiRoutes")(app);
-require("./public/htmlRoutes")(app);
-
-// =============================================================================
-// LISTENER
-// The below code effectively "starts" our server
-// =============================================================================
-
-app.listen(PORT, function () {
-  console.log("App listening on PORT: " + PORT);
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 
-app.get("/api/notes", function (req, res) {
-  // fs.readFile('./db/db.json', res, (err) => {
-  //   if (err) throw err;
+app.get("/notes", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "notes.html"))
+});
+
+
+app.get("/api/notes", (req, res) => {
+
+   
     return res.json(notes);
+
+});
+
+app.post("/api/notes", (req, res) => {
+    let newNote = req.body;
+    assignID(newNote);
+    reWriteNotes(newNote);
+    
+})
+
+app.delete("/api/notes/:id", (req, res) => {
+    deleteNote(req.params.id);
+});
+
+
+
+function assignID(newNote) {
+    let readNotes = notes;
+    newNote.id = readNotes.length + 1;
   
-})
+}
 
-app.post("/api/notes", function (req, res) {
-  let note = req.body;
-  // let noteInfo = fs.appendFile('./db/db.json', res, (err) => {
-  //   if (err) throw err;
-  // });
-  // let newNote = JSON.parse(noteInfo);
-  // newNote.push(note);
-  addNote(note)
+function reWriteNotes(note) {
+    let parsedNotes = notes;
+    parsedNotes.push(note);
+    writeNote(parsedNotes);
+};
 
-  // fs.writeFile("newNote", newNote, (err) => {
-  //   if (err) throw err;
-  //   console.log("New note added!")
-  // })
-})
+function deleteNote(id) {
+    let readNotes = notes;
+    let filteredNotes = readNotes.filter(note => note.id !== parseInt(id));
+  
+    writeNote(filteredNotes);
 
-app.delete("/api/notes/:id", function (req, res) {
-  var selectedNote = res.redirect;
-  for (var i = 0; i < arr.length; i++) {
-    if (selectedNote === arr[i].id) {
-      arr.filter(function (id, index, arr) {
-        return
-      })
-    }
-  }
-})
+}
 
-function addNote(note) {
-  let parsedNotes = notes;
-  parsedNotes.push(note);
-  fs.writeFile('./db/db.json', JSON.stringify(parsedNotes), "utf8", (err, res) => {
-    if (err) throw err;
-  }
+function writeNote(noteArray) {
+    fs.writeFile("./Develop/db/db.json", JSON.stringify(noteArray), "utf8", (err, res) => {
+        if (err) throw err;
 
-  )}
+    });
+}
